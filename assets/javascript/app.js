@@ -100,20 +100,25 @@ auth.onAuthStateChanged(function (user) {
         console.log("name: ", user.displayName);
         console.log("email: ", user.email);
         $("#start-div").hide();
+        $(".player-info").text(`Welcome, ${user.displayName}/${user.email}.` );
     }
 });
 
-var user = firebase.auth().currentUser;
-
-if (user) {
-    // User is signed in.
-    console.log("currentUser: ", user);
-    
-} else {
-    // No user is signed in.
-    console.log("no current user.");
-}
-
+//Set user sign in persistence to session
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+    .then(function () {
+        // Existing and future Auth states are now persisted in the current
+        // session only. Closing the window would clear any existing state even
+        // if a user forgets to sign out.
+        // ...
+        // New sign-in will be persisted with session persistence.
+        return firebase.auth().signInWithEmailAndPassword(email, password);
+    })
+    .catch(function (error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+    });
 
 
 
@@ -126,111 +131,6 @@ if (user) {
 
 
 /*
-
-// Sign out user
-firebase.auth().signOut()
-    .catch(function (err) {
-        // Handle errors
-    });
-
-
-
-///>>>>>>>>>AUTHENTICATION<<<<<<<<<<<<<<<<<
-// Initialize the FirebaseUI Widget using Firebase.
-var ui = new firebaseui.auth.AuthUI(firebase.auth());
-
-//Requires user to enter a display name
-ui.start('#firebaseui-auth-container', {
-    signInOptions: [
-        {
-            provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-            requireDisplayName: false
-        }
-    ]
-});
-
-
-var uiConfig = {
-    callbacks: {
-        signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-            // User successfully signed in.
-            // Return type determines whether we continue the redirect automatically
-            // or whether we leave that to developer to handle.
-            return true;
-        },
-        uiShown: function () {
-            // The widget is rendered.
-            // Hide the loader.
-            document.getElementById('loader').style.display = 'none';
-        }
-    },
-    // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
-    signInFlow: 'popup',
-    signInSuccessUrl: '<url-to-redirect-to-on-success>',
-    signInOptions: [
-        // Leave the lines as is for the providers you want to offer your users.
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        // firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-        // firebase.auth.TwitterAuthProvider.PROVIDER_ID,
-        // firebase.auth.GithubAuthProvider.PROVIDER_ID,
-        firebase.auth.EmailAuthProvider.PROVIDER_ID,
-        // firebase.auth.PhoneAuthProvider.PROVIDER_ID
-    ],
-    // Terms of service url.
-    tosUrl: '<your-tos-url>',
-    // Privacy policy url.
-    privacyPolicyUrl: '<your-privacy-policy-url>'
-};
-
-// The start method will wait until the DOM is loaded.
-ui.start('#firebaseui-auth-container', uiConfig);
-
-firebase.auth().createUserWithEmailAndPassword(email, password)
-    .catch(function (error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        if (errorCode == 'auth/weak-password') {
-            alert('The password is too weak.');
-        } else {
-            alert(errorMessage);
-        }
-        console.log(error);
-    });
-    
-// User create Accouunt function 
-function submitCreateAccount() {
-    var displayName = document.querySelector("#entry-displayname");
-    var email = document.querySelector("#entry-email");
-    var password = document.querySelector("#entry-password");
-
-    firebase.auth().createUserWithEmailAndPassword(email.value, password.value)
-        .then(function (user) {
-            //add the displayName
-            user.updateProfile({ displayName: displayName.value });
-        })
-}
-
-// User sign in function
-function signInWithEmailandPassword() {
-    var email = document.querySelector("#email");
-    var password = document.querySelector("#password");
-
-    firebase.auth().signInWithEmailAndPassword(email.value, password.value);
-}
-
-// sign in/ create account with google functions 
-
-/* on auth state change method. Fire if user log ins or off */
-
-
-
-
-
-
-
-
-
 
 
 
